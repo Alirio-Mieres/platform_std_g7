@@ -1,51 +1,59 @@
-import "bootstrap/dist/css/bootstrap.css";
-import { useState } from "react";
-import alumnosM from "./components/alumnos";
-import Row from "./components/Row";
-import Filter from "./components/Filter";
+import { useState, useRef } from "react";
+import "./index.css";
+import { useNavigate } from "react-router-dom";
+import users from "./js/users";
 
 function App() {
-  const [filtered, setFiltered] = useState(alumnosM);
+  // const [title, setTitle] = useState("");
+  const [loginError, setLoginError] = useState(false);
 
-  const handleChange = (e) => {
-    let keyWord = e.target.value.toLowerCase();
+  // creamos 2 referencias
+  const userRef = useRef("");
+  const passwordRef = useRef("");
 
-    let arr = alumnosM.filter((alumno) => {
-      let name = alumno.name.toLowerCase(); // recibo un string
+  const Navigate = useNavigate();
 
-      return name.includes(keyWord);
-    });
+  const submitHandler = (e) => {
+    e.preventDefault();
 
-    setFiltered(arr);
+    const email = userRef.current.value;
+    const password = passwordRef.current.value;
+
+    const user = users.find( user =>  user.email == email && user.password == password);
+
+    if(user) {
+      Navigate("/main");
+    } else {
+      setLoginError(true)
+    }
+
   };
 
-  // const bootstrap = bootstrap();
-
   return (
-    <>
-      
-      <main className="container">
-      <Filter handleChange={handleChange} />
+    <div className="container-login">
+      <h1>Login</h1>
+      <form onSubmit={submitHandler}>
+        <input
+          type="email"
+          placeholder="Usuario"
+          ref={userRef}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Contraseña"
+          required
+          ref={passwordRef}
+        />
 
-        <h2 className="mt-4">Students Info</h2>
-        <table className="table text-center border">
-          <thead>
-            <tr>
-              <th scope="col">#id</th>
-              <th scope="col">First Name</th>
-              <th scope="col">Last Name</th>
-              <th scope="col">Grade</th>
-              <th scope="col">Age</th>
-              <th scope="col">Delete</th>
-            </tr>
-          </thead>
-          <tbody id="t-body">
-            {filtered.map((alumno, idx) => <Row key={idx} alumno={alumno} /> )}
-          </tbody>
-        </table>
-      </main>
-    </>
+        {
+          loginError && <span>Error. Please try again.</span>
+        }
+        <button>INGRESAR</button>
+      </form>
+    </div>
   );
 }
 
 export default App;
+// Hebert
